@@ -60,7 +60,7 @@ in
             syntax on
 
             hi clear CursorLine
-            hi CursorLine gui=underline
+            hi CursorLine gui=underline cterm=underline
 
             "---------- Latex ----------"
             let g:livepreview_previewer = 'zathura'
