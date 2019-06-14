@@ -19,12 +19,108 @@ in
     # Allow proprietary packages
     allowUnfree = true;
 
-    packageOverrides = pkgs: {
+    packageOverrides = pkgs: with pkgs; {
       unstable = import unstableTarball {
         config = config.nixpkgs.config;
       };
-    };
+
+      neovim = neovim.override {
+        configure = {
+          customRC = ''
+            "---------- General ----------"
+            set number
+            set mouse=a
+            set incsearch
+            set ruler
+            set cursorline
+            set colorcolumn=80
+            set encoding=utf-8
+            filetype plugin indent on
+            set scrolloff=5
+
+            set shiftwidth=4
+            set tabstop=4
+            set expandtab
+            set showmatch
+
+
+            "---------- Bindings ----------"
+            nnoremap <C-up> <C-Y>
+            nnoremap <C-k> <C-Y>
+            nnoremap <C-down> <C-E>
+            nnoremap <C-j> <C-E>
+            map <C-n> <plug>NERDTreeTabsToggle<CR>
+            command Pdfrun execute "silent !pandoc --filter pandoc-citeproc -o %.pdf %" | redraw!
+            map <F5> :Pdfrun<CR>
+            vmap <C-c> :w !xclip -i -sel c
+
+            "---------- Theming ----------"
+            colorscheme Tomorrow-Night-Bright
+            set laststatus=1
+            syntax on
+
+            hi clear CursorLine
+            hi CursorLine gui=underline
+
+            "---------- Latex ----------"
+            let g:livepreview_previewer = 'zathura'
+
+            "---------- GoYo ----------"
+            let g:goyo_width  = "50%+20%"
+            let g:goyo_height = "100%-5%"
+
+            "---------- Programming ----------"
+            au BufNewFile,BufRead *.js, *.html, *.css
+                \ set tabstop=2 |
+                \ set softtabstop=2 |
+                \ set shiftwidth=2
+
+            "---------- Python ----------"
+            let python_highlight_all=1
+            set foldmethod=indent
+            set foldlevel=99
+            nnoremap <space> za
+            let g:SimpylFold_docstring_preview=1
+            let NERDTreeIgnore=['\.pyc$', '\~$'] "ignore files in NERDTree
+
+            au BufNewFile,BufRead *.py
+                \ set tabstop=4 |
+                \ set softtabstop=4 |
+                \ set shiftwidth=4 |
+                \ set textwidth=79 |
+                \ set expandtab |
+                \ set autoindent |
+                \ set fileformat=unix
+
+            :highlight BadWhitespace ctermbg=darkgreen guibg=darkgreen
+
+            au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
+          '';
+	  plug.plugins = with pkgs.vimPlugins; [
+        vim-sensible
+        tabular
+        goyo
+        auto-pairs
+        vim-surround
+        base16-vim
+        vim-colorschemes
+        vim-airline
+        nerdtree
+        vim-nerdtree-tabs
+        vim-polyglot
+        vim-latex-live-preview
+        vim-markdown
+        vim-gitgutter
+        youcompleteme
+        syntastic
+        vim-flake8
+        ctrlp
+        python-mode
+      ];
+        };
+     };
   };
+};
 
   environment = {
     systemPackages = with pkgs; [
@@ -34,8 +130,8 @@ in
   	  libnotify thunderbird unzip signal-desktop nix-prefetch-git
       plymouth gitAndTools.gitFull arandr networkmanagerapplet
       flameshot protonmail-bridge android-studio jetbrains.webstorm
-      jetbrains.pycharm-community nodejs-11_x gimp
-      haskellPackages.pandoc-citeproc
+      jetbrains.pycharm-community nodejs-11_x gimp fzf tree
+      haskellPackages.pandoc-citeproc sxiv poppler_utils
 
   	  (import /home/jhaasdijk/Scripts/nixpkgs/st/my-st.nix)
     ];
