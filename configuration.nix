@@ -168,7 +168,7 @@ in
 
       # ------------------------------
 
-  	  (import /home/jhaasdijk/Projects/C/st/my-st.nix)
+  	  (import ~/Projects/C/st/my-st.nix)
     ];
 
     variables = {
