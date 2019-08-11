@@ -43,6 +43,7 @@ in
             set expandtab
             set showmatch
 
+            set noshowmode
 
             "---------- Bindings ----------"
             nnoremap <C-up> <C-Y>
@@ -62,6 +63,21 @@ in
             hi clear CursorLine
             hi CursorLine gui=underline cterm=underline
 
+            hi VertSplit ctermfg=5 ctermbg=bg
+
+            let g:lightline = {
+              \ 'colorscheme': 'wombat',
+              \ 'active': {
+              \   'left': [ [ 'mode', 'paste' ],
+              \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+              \ },
+              \ 'component_function': {
+              \   'gitbranch': 'fugitive#head'
+              \ },
+              \ 'separator': { 'left': '', 'right': '' },
+              \ 'subseparator': { 'left': '', 'right': '' },
+              \ }
+
             "---------- Latex ----------"
             let g:livepreview_previewer = 'zathura'
 
@@ -71,9 +87,9 @@ in
 
             "---------- Programming ----------"
             au BufNewFile,BufRead *.js, *.html, *.css
-                \ set tabstop=2 |
-                \ set softtabstop=2 |
-                \ set shiftwidth=2
+              \ set tabstop=2 |
+              \ set softtabstop=2 |
+              \ set shiftwidth=2
 
             "---------- Python ----------"
             let python_highlight_all=1
@@ -84,16 +100,15 @@ in
             let NERDTreeIgnore=['\.pyc$', '\~$'] "ignore files in NERDTree
 
             au BufNewFile,BufRead *.py
-                \ set tabstop=4 |
-                \ set softtabstop=4 |
-                \ set shiftwidth=4 |
-                \ set textwidth=79 |
-                \ set expandtab |
-                \ set autoindent |
-                \ set fileformat=unix
+              \ set tabstop=4 |
+              \ set softtabstop=4 |
+              \ set shiftwidth=4 |
+              \ set textwidth=79 |
+              \ set expandtab |
+              \ set autoindent |
+              \ set fileformat=unix
 
-            :highlight BadWhitespace ctermbg=darkgreen guibg=darkgreen
-
+            hi BadWhitespace ctermbg=darkgreen guibg=darkgreen
             au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
           '';
 	  plug.plugins = with pkgs.vimPlugins; [
@@ -104,7 +119,8 @@ in
         vim-surround
         base16-vim
         vim-colorschemes
-        vim-airline
+        lightline-vim
+        vim-fugitive
         nerdtree
         vim-nerdtree-tabs
         vim-polyglot
@@ -114,8 +130,8 @@ in
         youcompleteme
         syntastic
         vim-flake8
-        ctrlp
         python-mode
+        ctrlp
       ];
         };
      };
@@ -124,16 +140,35 @@ in
 
   environment = {
     systemPackages = with pkgs; [
-      htop neovim neofetch libsForQt5.vlc xclip pandoc xfce.thunar
-      powertop tlp firefox libreoffice texlive.combined.scheme-full
-  	  biber zathura python3 redshift ranger exa fish dunst xss-lock
-  	  libnotify thunderbird unzip signal-desktop nix-prefetch-git
-      plymouth gitAndTools.gitFull arandr networkmanagerapplet
-      flameshot protonmail-bridge android-studio jetbrains.webstorm
-      jetbrains.pycharm-community nodejs-11_x gimp fzf tree
-      haskellPackages.pandoc-citeproc sxiv poppler_utils
+      htop neovim libsForQt5.vlc xclip pandoc powertop firefox libreoffice
+      texlive.combined.scheme-full biber zathura python3 ranger exa dunst
+      teamspeak_client libnotify thunderbird unzip signal-desktop flameshot
+      nix-prefetch-git plymouth gitAndTools.gitFull arandr networkmanagerapplet
+      android-studio jetbrains.webstorm gimp tree sxiv tmux
+      jetbrains.pycharm-community nodejs-11_x poppler_utils pavucontrol
+      haskellPackages.pandoc-citeproc
 
-  	  (import /home/jhaasdijk/Scripts/nixpkgs/st/my-st.nix)
+      # protonmail local bridge implementation
+      unstable.protonmail-bridge
+
+      # cli music
+      python37Packages.mps-youtube
+      mpv
+
+      # ------------------------------
+
+      p7zip
+      qbittorrent
+
+      exfat
+      exfat-utils
+      fuse_exfat
+
+      vscodium
+
+      # ------------------------------
+
+  	  (import /home/jhaasdijk/Projects/C/st/my-st.nix)
     ];
 
     variables = {
@@ -274,6 +309,8 @@ in
     # Protonmail
     gnome3.gnome-keyring.enable = true;
   };
+
+  virtualisation.virtualbox.host.enable = true;
 
   # Users
   users.extraUsers = {
