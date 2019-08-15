@@ -13,6 +13,9 @@ in
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
+
+    # Include generic folder
+    ./generic
   ];
 
   nixpkgs.config = {
@@ -66,7 +69,7 @@ in
             hi VertSplit ctermfg=5 ctermbg=bg
 
             let g:lightline = {
-              \ 'colorscheme': 'wombat',
+              \ 'colorscheme': 'powerline',
               \ 'active': {
               \   'left': [ [ 'mode', 'paste' ],
               \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
@@ -74,8 +77,8 @@ in
               \ 'component_function': {
               \   'gitbranch': 'fugitive#head'
               \ },
-              \ 'separator': { 'left': '', 'right': '' },
-              \ 'subseparator': { 'left': '', 'right': '' },
+              \ 'separator': { 'left': '', 'right': '' },
+              \ 'subseparator': { 'left': '|', 'right': '|' },
               \ }
 
             "---------- Latex ----------"
@@ -112,26 +115,20 @@ in
             au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
           '';
 	  plug.plugins = with pkgs.vimPlugins; [
-        vim-sensible
-        tabular
-        goyo
         auto-pairs
-        vim-surround
         base16-vim
-        vim-colorschemes
+        goyo
         lightline-vim
-        vim-fugitive
         nerdtree
-        vim-nerdtree-tabs
-        vim-polyglot
+        tabular
+        vim-colorschemes
+        vim-gitgutter
         vim-latex-live-preview
         vim-markdown
-        vim-gitgutter
-        youcompleteme
-        syntastic
-        vim-flake8
-        python-mode
-        ctrlp
+        vim-nerdtree-tabs
+        vim-polyglot
+        vim-sensible
+        vim-surround
       ];
         };
      };
@@ -146,7 +143,7 @@ in
       nix-prefetch-git plymouth gitAndTools.gitFull arandr networkmanagerapplet
       android-studio jetbrains.webstorm gimp tree sxiv tmux
       jetbrains.pycharm-community nodejs-11_x poppler_utils pavucontrol
-      haskellPackages.pandoc-citeproc
+      haskellPackages.pandoc-citeproc feh
 
       # protonmail local bridge implementation
       unstable.protonmail-bridge
@@ -159,16 +156,15 @@ in
 
       p7zip
       qbittorrent
-
       exfat
-      exfat-utils
-      fuse_exfat
-
+      bat
+      fd # find alternative
+      ripgrep
       vscodium
 
       # ------------------------------
 
-  	  (import ~/Projects/C/st/my-st.nix)
+      st
     ];
 
     variables = {
@@ -215,12 +211,13 @@ in
       dejavu_fonts
       emojione
       fira-code
+      font-awesome-ttf
       iosevka
       helvetica-neue-lt-std
+      nerdfonts
       powerline-fonts
       ubuntu_font_family
       xorg.fontbhlucidatypewriter100dpi
-      font-awesome-ttf
     ];
     fontconfig = {
       defaultFonts = {
@@ -245,14 +242,6 @@ in
     # started in user sessions.
     mtr.enable = true;
     light.enable = true;
-
-    fish = {
-      enable = true;
-      shellAliases = {
-        import = "exec nix_import";
-        nix-shell = "nix-shell --run fish ";
-      };
-    };
 
     # Android development
     adb.enable = true;
@@ -293,6 +282,21 @@ in
       };
     };
 
+    compton = {
+      enable = true;
+      activeOpacity = "1.0";
+      inactiveOpacity = "0.85";
+      # Enable when flicker appears in maximized windows
+      extraOptions = ''
+        unredir-if-possible = false;
+        focus-exclude = "x = 0 && y = 0 && override_redirect = true";
+      '';
+      opacityRules = [
+        "60:class_g = 'st'"
+      ];
+      vSync = "opengl-swc";
+    };
+    
     redshift = {
       enable = true;
       latitude = "52";
