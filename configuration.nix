@@ -207,6 +207,9 @@ in
 
     # Protonmail
     gnome3.gnome-keyring.enable = true;
+
+    # Some dirty installs
+    flatpak.enable = true;
   };
 
   virtualisation.virtualbox.host.enable = true;
