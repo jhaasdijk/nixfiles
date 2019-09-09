@@ -222,13 +222,6 @@ in
       shell = pkgs.fish;
       extraGroups = [
         "wheel" "networkmanager"
-        "nm-openvpn"
-        "tty" "dialout" # For arduino
-        "davfs2"
-        "docker"
-        "wireshark"
-        "fuse" # for sshfs
-        "audio"
         "adbusers" # Android development
         "video" # For light
       ];
