@@ -1,5 +1,5 @@
 
-# nixos https://nixos.org/channels/nixos-19.03
+# nixos https://nixos.org/channels/nixos-19.09
 # unstable packages can be pulled by prepending 'unstable.' to pkgname
 
 { config, pkgs, ... }:
@@ -13,10 +13,10 @@ in
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-  ];
 
-  # Include my custom overlays.
-  nixpkgs.overlays = [ (import ./overlays) ];
+    ./configuration
+    ./overlays
+  ];
 
   nixpkgs.config = {
     # Allow proprietary packages.
@@ -32,34 +32,33 @@ in
 
   environment = {
     systemPackages = with pkgs; [
-      htop neovim libsForQt5.vlc xclip pandoc powertop firefox libreoffice
-      texlive.combined.scheme-full biber zathura python3 ranger exa dunst
-      teamspeak_client libnotify thunderbird unzip signal-desktop flameshot
-      nix-prefetch-git plymouth gitAndTools.gitFull arandr networkmanagerapplet
-      android-studio jetbrains.webstorm gimp tree sxiv tmux
-      jetbrains.pycharm-community nodejs-11_x poppler_utils pavucontrol
-      haskellPackages.pandoc-citeproc feh
 
-      # protonmail local bridge implementation
-      unstable.protonmail-bridge
+      # Browser
+      firefox
 
-      # cli music
-      python37Packages.mps-youtube
-      mpv
+      # Cli
+      arandr dunst exa exfat fd gitAndTools.gitFull gnupg htop magic-wormhole
+      p7zip powertop protonvpn-cli ranger ripgrep st tmux tree unzip xclip
 
-      # ------------------------------
+      # Editor
+      libreoffice neovim
 
-      p7zip
-      qbittorrent
-      exfat
-      bat
-      fd # find alternative
-      ripgrep
-      vscodium
+      # Email
+      thunderbird unstable.protonmail-bridge
 
-      # ------------------------------
+      # IM client
+      signal-desktop
 
-      st
+      # Text formatting (LaTeX / Markdown)
+      biber haskellPackages.pandoc-citeproc pandoc texlive.combined.scheme-full
+
+      # Media (- Control)
+      feh flameshot gimp libsForQt5.vlc pavucontrol poppler_utils qbittorrent
+      sxiv zathura
+
+      # Programming
+      python3
+
     ];
 
     variables = {
@@ -79,8 +78,13 @@ in
 
   # Networking
   networking = {
-    hostName = "nixos";
-    networkmanager.enable = true;
+    hostName = "zubat";
+    networkmanager = {
+      enable = true;
+      packages = with pkgs; [
+        networkmanagerapplet
+      ];
+    };
   };
 
   # Locale
@@ -92,44 +96,27 @@ in
 
   # Sound
   sound.enable = true;
-
-  hardware.opengl.driSupport32Bit = true;
   hardware.pulseaudio.enable = true;
-  hardware.pulseaudio.support32Bit = true;
 
   # Fonts
   fonts = {
-    enableFontDir = true;
-    enableGhostscriptFonts = true;
     fonts = with pkgs; [
-      corefonts # Microsoft free fonts
-      dejavu_fonts
-      emojione
-      fira-code
       font-awesome-ttf
-      iosevka
-      helvetica-neue-lt-std
       nerdfonts
       powerline-fonts
       ubuntu_font_family
-      xorg.fontbhlucidatypewriter100dpi
     ];
     fontconfig = {
       defaultFonts = {
         sansSerif = ["Ubuntu"];
-        monospace = ["Fira Code"];
       };
-      ultimate.enable = true;
     };
   };
 
-  # Set your time zone.
+  # Set your time zone and location
   time.timeZone = "Europe/Amsterdam";
-
-  # Collect nix store garbage and optimise daily.
-  nix.gc.automatic = true;
-  nix.gc.options = "--delete-older-than 14d";
-  nix.optimise.automatic = true;
+  location.latitude = 52.0;
+  location.longitude = 5.0;
 
   # Programs
   programs = {
@@ -143,7 +130,7 @@ in
 
     # Screen lock
     xss-lock.enable = true;
-    xss-lock.lockerCommand = "i3lock -c 000000";
+    xss-lock.lockerCommand = "i3lock -c 2f302f";
   };
 
   # Services
@@ -151,21 +138,20 @@ in
     xserver = {
       enable = true;
       layout = "gb";
+      xkbOptions = "ctrl:nocaps";
 
-      # Enable touchpad support.
+      # Enable touchpad support
       libinput = {
         enable = true;
         naturalScrolling = false;
       };
 
+      # lightdm - Cross desktop display manager
       displayManager.lightdm = {
         enable = true;
-        background = builtins.fetchurl {
-          url = "https://hdqwalls.com/download/abstract-star-nights-time-lapse-45-2560x1600.jpg";
-          sha256 = "0v5m7b5c9fdxmckqp7569yj4ga2n7xs5mi700ild89blzwsw6hr2";
-        };
       };
 
+      # i3 - Tiling window manager
       windowManager.i3 = {
         enable = true;
         package = pkgs.i3-gaps;
@@ -177,53 +163,45 @@ in
       };
     };
 
+    # Compton - X11 compositor
     compton = {
+      backend = "glx";
       enable = true;
-      activeOpacity = "1.0";
-      inactiveOpacity = "0.85";
-      # Enable when flicker appears in maximized windows
-      extraOptions = ''
-        unredir-if-possible = false;
-        focus-exclude = "x = 0 && y = 0 && override_redirect = true";
-      '';
-      opacityRules = [
-        "60:class_g = 'st'"
-      ];
-      vSync = "opengl-swc";
+      fade = true;
+      fadeDelta = 3;
+      vSync = true;
     };
     
+    # Redshift - Time based screen color temperature
     redshift = {
       enable = true;
-      latitude = "52";
-      longitude = "5";
       temperature = {
         day = 6000;
         night = 3500;
       };
     };
 
-    # battery management
+    # tlp - Laptop power saving
     tlp.enable = true;
 
-    # Protonmail
+    # Gnome Keyring - Protonmail required dependency
     gnome3.gnome-keyring.enable = true;
 
-    # Some dirty installs
-    flatpak.enable = true;
   };
 
+  # VirtualBox - PC emulator
   virtualisation.virtualbox.host.enable = true;
 
   # Users
   users.extraUsers = {
     jhaasdijk = {
       isNormalUser = true;
-      uid = 1000;
       shell = pkgs.fish;
       extraGroups = [
-        "wheel" "networkmanager"
-        "adbusers" # Android development
-        "video" # For light
+        "adbusers"       # Android development
+        "networkmanager" # Network privileges
+        "video"          # /release-notes.html#sec-release-19.03-incompatibilities
+        "wheel"          # Additional system privileges
       ];
     };
   };
