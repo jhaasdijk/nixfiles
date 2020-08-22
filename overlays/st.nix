@@ -5,7 +5,7 @@ self: super:
       owner = "jhaasdijk";
       repo = "st";
       rev = "master";
-      sha256 = "0f1lbiprvna8l8xjqw73lj8awsswbl8fj4wgdwrx0raci2qb762h";
+      sha256 = "15hvh3ys60zq1x0jg2dfg1szr2pa8ishfj6f861f28sjd30qncks";
     };
   });
 }

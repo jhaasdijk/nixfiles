@@ -58,7 +58,7 @@ self: super:
         syntax on
 
       '';
-	  plug.plugins = with super.vimPlugins; [
+      plug.plugins = with super.vimPlugins; [
         auto-pairs       # Edit ({["''"]}) in pairs
         tabular          # Text filtering and alignment
         vim-colorschemes # Extensive colorscheme pack

@@ -1,5 +1,5 @@
 
-# nixos https://nixos.org/channels/nixos-19.09
+# nixos https://nixos.org/channels/nixos-20.03
 # unstable packages can be pulled by prepending 'unstable.' to pkgname
 
 { config, pkgs, ... }:
@@ -34,14 +34,15 @@ in
     systemPackages = with pkgs; [
 
       # Browser
-      firefox
+      chromium firefox
 
       # Cli
-      arandr dunst exa exfat fd gitAndTools.gitFull gnupg htop magic-wormhole
-      p7zip powertop protonvpn-cli ranger ripgrep st tmux tree unzip xclip
+      arandr clang clang-tools coreutils dunst exa exfat fd git gnupg htop
+      magic-wormhole p7zip powertop protonvpn-cli ranger ripgrep st tmux tree
+      unzip xclip
 
       # Editor
-      libreoffice neovim
+      libreoffice neovim vscodium
 
       # Email
       thunderbird unstable.protonmail-bridge
@@ -56,9 +57,6 @@ in
       feh flameshot gimp libsForQt5.vlc pavucontrol poppler_utils qbittorrent
       sxiv zathura
 
-      # Programming
-      python3
-
     ];
 
     variables = {
@@ -71,9 +69,6 @@ in
     loader.grub.enable = true;
     loader.grub.version = 2;
     loader.grub.device = "/dev/sda";
-
-    # Silent (-er) boot
-    plymouth.enable = true;
   };
 
   # Networking
@@ -88,11 +83,12 @@ in
   };
 
   # Locale
-  i18n = {
-    consoleFont = "Lat2-Terminus16";
-    consoleKeyMap = "uk";
-    defaultLocale = "en_GB.UTF-8";
+  console = {
+    font = "Lat2-Terminus16";
+    keyMap = "uk";
   };
+
+  i18n.defaultLocale = "en_GB.UTF-8";
 
   # Sound
   sound.enable = true;
@@ -125,6 +121,8 @@ in
     mtr.enable = true;
     light.enable = true;
 
+    gnupg.agent.enable = true;
+
     # Android development
     adb.enable = true;
 
@@ -138,7 +136,7 @@ in
     xserver = {
       enable = true;
       layout = "gb";
-      xkbOptions = "ctrl:nocaps";
+      xkbOptions = "caps:ctrl_modifier";
 
       # Enable touchpad support
       libinput = {
